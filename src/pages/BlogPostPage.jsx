@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import ErrorMessage from '../components/ErrorMessage.jsx'
 import LoadingState from '../components/LoadingState.jsx'
+import CommentsSection from '../components/CommentsSection.jsx'
 import { usePublishedPost } from '../hooks/useContent.js'
 import { formatContentDate } from '../lib/content.js'
 
@@ -73,6 +74,7 @@ export default function BlogPostPage() {
           .
         </p>
       </div>
+      <CommentsSection contentId={post.id} contentType="article" />
     </article>
   )
 }

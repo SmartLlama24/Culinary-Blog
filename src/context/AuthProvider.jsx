@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { supabase, supabaseConfigError } from '../lib/supabaseClient.js'
 import { AuthContext } from './authContext.js'
 
@@ -92,6 +92,27 @@ export function AuthProvider({ children }) {
     }
   }, [userId])
 
+  const refreshProfile = useCallback(async () => {
+    if (!supabase || !userId) {
+      setProfileState({ userId: null, data: null, error: null })
+      return null
+    }
+
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, display_name, role')
+      .eq('id', userId)
+      .maybeSingle()
+
+    if (error) {
+      setProfileState({ userId, data: null, error: error.message })
+      throw error
+    }
+
+    setProfileState({ userId, data, error: null })
+    return data
+  }, [userId])
+
   async function signUp({ email, password, displayName }) {
     if (!supabase) throw new Error(supabaseConfigError)
 
@@ -134,6 +155,7 @@ export function AuthProvider({ children }) {
       isProfileLoading,
       profile,
       profileError,
+      refreshProfile,
       session,
       signIn,
       signOut,
@@ -146,6 +168,7 @@ export function AuthProvider({ children }) {
       isProfileLoading,
       profile,
       profileError,
+      refreshProfile,
       session,
       user,
     ],

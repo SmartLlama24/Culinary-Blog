@@ -2,6 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import ErrorMessage from '../components/ErrorMessage.jsx'
 import FavoriteButton from '../components/FavoriteButton.jsx'
 import LoadingState from '../components/LoadingState.jsx'
+import CommentsSection from '../components/CommentsSection.jsx'
 import { usePublishedRecipe } from '../hooks/useContent.js'
 import { formatContentDate, formatRecipeTime } from '../lib/content.js'
 
@@ -74,6 +75,7 @@ export default function RecipeDetailPage() {
             ))}
           </ol>
         </div>
+        <CommentsSection contentId={recipe.id} contentType="recipe" />
       </div>
       <aside className="detail-sidebar">
         <h2>What you’ll need</h2>

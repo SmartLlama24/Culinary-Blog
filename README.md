@@ -29,6 +29,9 @@ field and to allow admin recipe inserts to use the client-generated ID used in
 the Storage object path.
 Apply `supabase/migrations/20261026180000_create_user_favorites.sql` to enable
 account-synced recipe favorites.
+Apply `supabase/migrations/20261026190000_add_account_comments.sql` after the
+other migrations to add public discussion threads for published recipes and
+journal posts.
 
 Run `npm run build` to create a production build and `npm run lint` to check
 the source with Oxlint.
@@ -39,6 +42,10 @@ the source with Oxlint.
 - `src/context/AuthProvider.jsx` — Restores the Supabase session, listens for
   auth changes, reads the signed-in user's own profile, and exposes auth
   actions.
+- `src/pages/AccountPage.jsx` — Shows the signed-in user's Auth email and
+  profile display name, allows display-name updates, and signs out.
+- `src/components/CommentsSection.jsx` — Shared public comment thread and
+  authenticated create/edit/delete controls for recipes and journal posts.
 - `src/context/useAuth.js` and `src/context/authContext.js` — Shared
   authentication hook and context.
 - `src/lib/supabaseClient.js` — Configures the browser client using only the
@@ -90,6 +97,7 @@ the source with Oxlint.
 - `/recipes` and `/recipes/:slug` — Published Supabase recipes and details
 - `/journal` and `/journal/:slug` — Blog feed and article
 - `/favorites` — Signed-in users only; displays their saved published recipes.
+- `/account` — Signed-in users only; edit profile display name and sign out.
 - `/login` and `/register` — Supabase email/password authentication.
 - `/admin` — Signed-in users whose database profile role is `admin`.
 
@@ -160,6 +168,17 @@ Authenticated users can select, insert, and delete only their own rows; clients
 cannot update favorite ownership. Recipes hidden by recipe RLS (drafts or
 deleted recipes) are not returned on the Favorites page. No service-role key
 is used by the frontend.
+
+Comments are stored in `public.comments`. Each row references exactly one
+published recipe or journal post through a real foreign key, and content
+deletion cascades to its comments. Public readers can view comments only on
+published content. Authenticated authors can add comments and manage only
+their own, while admins can also delete any comment using the trusted
+`profiles.role` check; the database sets each author ID from `auth.uid()` and
+snapshots their profile display name. Comments are limited to 2,000 characters
+and are listed oldest first. Apply
+`supabase/migrations/20261026200000_allow_admin_comment_deletion.sql` after the
+comments migration to enable admin deletion.
 If a cover-image object is missing or unreadable, its content remains available
 without the image; development builds log the Storage error name, message,
 code, and status without logging the object path or credentials. Other Storage
@@ -168,7 +187,8 @@ errors still fail the content request.
 ### Deployment and security checks
 
 1. Apply the migrations in order: profile, recipes, blog/storage, recipe
-   trigger/upload-ID fix, then user favorites.
+   trigger/upload-ID fix, user favorites, account/comments, then admin comment
+   deletion.
 2. Ensure the initial admin account has been promoted using the trusted SQL
    editor procedure above; never add admin assignment to the client.
 3. Configure Supabase Auth redirect URLs for local and deployed app origins.

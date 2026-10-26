@@ -54,6 +54,11 @@ export default function Navbar() {
               {item.label}
             </NavLink>
           ))}
+          {user && (
+            <NavLink onClick={closeMenu} to="/account">
+              Account
+            </NavLink>
+          )}
           {profile?.role === 'admin' && (
             <NavLink onClick={closeMenu} to="/admin">
               Studio

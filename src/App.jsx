@@ -8,6 +8,7 @@ import { FavoritesProvider } from './context/FavoritesContext.jsx'
 import './App.css'
 
 const AdminPage = lazy(() => import('./pages/AdminPage.jsx'))
+const AccountPage = lazy(() => import('./pages/AccountPage.jsx'))
 const AuthPage = lazy(() => import('./pages/AuthPage.jsx'))
 const BlogPage = lazy(() => import('./pages/BlogPage.jsx'))
 const BlogPostPage = lazy(() => import('./pages/BlogPostPage.jsx'))
@@ -31,6 +32,7 @@ function App() {
                 <Route path="journal" element={<BlogPage />} />
                 <Route path="journal/:slug" element={<BlogPostPage />} />
                 <Route element={<ProtectedRoute />}>
+                  <Route path="account" element={<AccountPage />} />
                   <Route path="favorites" element={<FavoritesPage />} />
                 </Route>
                 <Route path="login" element={<AuthPage mode="login" />} />
