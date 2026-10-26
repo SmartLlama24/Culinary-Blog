@@ -1123,6 +1123,69 @@ main {
   line-height: 1.6;
 }
 
+.ingredient-editor {
+  min-width: 0;
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  background: #fffefa;
+}
+
+.ingredient-editor legend {
+  padding: 0 7px;
+  color: var(--green-dark);
+  font-family: var(--serif);
+  font-size: 19px;
+}
+
+.ingredient-editor > .field-hint,
+.ingredient-editor > .field-error {
+  margin: 0;
+}
+
+.ingredient-list {
+  display: grid;
+  gap: 12px;
+}
+
+.ingredient-row {
+  min-width: 0;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #e7e8df;
+  background: var(--paper);
+}
+
+.ingredient-row-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ingredient-row-heading h3 {
+  margin: 0;
+  color: var(--green-dark);
+  font-family: var(--serif);
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.ingredient-fields {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.field-error {
+  color: #9d4938;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
 .editor-actions {
   justify-content: flex-end;
   padding-top: 15px;
@@ -1603,12 +1666,20 @@ main {
     padding: 18px;
   }
 
+  .ingredient-fields {
+    grid-template-columns: 1fr;
+  }
+
   .form-grid {
     grid-template-columns: 1fr;
   }
 
   .form-grid .form-span {
     grid-column: auto;
+  }
+
+  .ingredient-editor {
+    padding: 14px;
   }
 
   .editor-actions {

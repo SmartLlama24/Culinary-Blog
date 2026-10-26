@@ -308,7 +308,7 @@ export async function saveRecipe(recipe, existingId) {
   const ingredients = recipe.ingredients.map((ingredient, index) => ({
     recipe_id: recipeId,
     ingredient_name: ingredient.name,
-    quantity: ingredient.quantity || null,
+    quantity: ingredient.quantity,
     unit: ingredient.unit || null,
     notes: ingredient.notes || null,
     sort_order: index + 1,

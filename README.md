@@ -58,6 +58,8 @@ the source with Oxlint.
   user-owned favorite records, indexes, grants, and RLS policies.
 - `src/lib/content.js` — Published/admin content queries, mutations, image
   validation and storage access.
+- `src/pages/AdminPage.jsx` — Admin content editor, including structured
+  ingredient rows with numeric quantities and field-level validation.
 - `src/hooks/useContent.js` — Shared async state for published and admin
   content.
 - `src/components/EditorialCard.jsx` — Shared feed card linking to recipe or
@@ -123,6 +125,9 @@ quantities are numeric with an optional unit and notes.
 
 Blog posts have a title, unique slug, excerpt, category, body, cover image
 reference, status, publication time, and creation/update timestamps.
+Recipe ingredient quantities are entered as positive numbers with up to three
+decimal places and stored separately from their required units; ingredient
+notes are optional.
 
 The recipe, blog, and favorites migrations enable RLS and restrict table
 grants. Anonymous and signed-in non-admin users can query only published rows
