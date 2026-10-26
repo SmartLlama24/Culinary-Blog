@@ -27,6 +27,8 @@ Apply `supabase/migrations/20261026170000_fix_recipe_timestamp_trigger_and_uploa
 to prevent recipe child timestamp triggers from reading a missing `status`
 field and to allow admin recipe inserts to use the client-generated ID used in
 the Storage object path.
+Apply `supabase/migrations/20261026180000_create_user_favorites.sql` to enable
+account-synced recipe favorites.
 
 Run `npm run build` to create a production build and `npm run lint` to check
 the source with Oxlint.
@@ -49,6 +51,11 @@ the source with Oxlint.
 - `supabase/migrations/20261026160000_create_blog_and_cover_storage.sql` —
   Creates blog posts and private cover storage with publication-aware read
   policies and admin-only mutations.
+- `supabase/migrations/20261026170000_fix_recipe_timestamp_trigger_and_upload_ids.sql` —
+  fixes the recipe timestamp trigger and aligns recipe IDs with uploaded image
+  paths.
+- `supabase/migrations/20261026180000_create_user_favorites.sql` — creates
+  user-owned favorite records, indexes, grants, and RLS policies.
 - `src/lib/content.js` — Published/admin content queries, mutations, image
   validation and storage access.
 - `src/hooks/useContent.js` — Shared async state for published and admin
@@ -62,10 +69,12 @@ the source with Oxlint.
 - `src/index.css` — Global reset, typography, palette, and base accessibility
   styles.
 - `src/App.css` — Shared layout, component, page, and responsive styles.
-- `src/data/content.js` — Local journal samples retained for the existing
-  in-memory favorites preview; these are not used by public feeds.
-- `src/context/FavoritesContext.jsx` — In-memory favorites state, reset when
-  the page is refreshed; it is not synced to the user account.
+- `src/data/content.js` — Legacy local journal samples; not used by public
+  feeds or account-synced favorites.
+- `src/context/FavoritesContext.jsx` — Loads and updates the signed-in user's
+  favorites through Supabase, with optimistic updates and rollback on errors.
+- `src/components/FavoriteButton.jsx` — Accessible favorite control shared by
+  recipe cards and recipe detail pages.
 - `src/context/useFavorites.js` and `src/context/favoritesContext.js` — The
   shared favorites hook and context instance.
 - `src/components/` — Shared navigation, footer, content cards, section
@@ -78,7 +87,7 @@ the source with Oxlint.
 - `/` — Home
 - `/recipes` and `/recipes/:slug` — Published Supabase recipes and details
 - `/journal` and `/journal/:slug` — Blog feed and article
-- `/favorites` — Signed-in users only; favorites remain in memory.
+- `/favorites` — Signed-in users only; displays their saved published recipes.
 - `/login` and `/register` — Supabase email/password authentication.
 - `/admin` — Signed-in users whose database profile role is `admin`.
 
@@ -115,8 +124,9 @@ quantities are numeric with an optional unit and notes.
 Blog posts have a title, unique slug, excerpt, category, body, cover image
 reference, status, publication time, and creation/update timestamps.
 
-Both migrations enable RLS and restrict table grants. Anonymous and signed-in
-non-admin users can query only published rows and published recipe children.
+The recipe, blog, and favorites migrations enable RLS and restrict table
+grants. Anonymous and signed-in non-admin users can query only published rows
+and published recipe children.
 Only admins, verified by their protected `profiles.role`, can read and manage
 drafts. The homepage merges published recipes and posts and sorts by
 `published_at`; public recipe and journal detail routes also explicitly filter
@@ -137,8 +147,14 @@ never log object paths, filenames, credentials, or content.
 
 The admin dashboard can create, edit, preview, publish, unpublish, and delete
 recipes and journal posts. Recipe ingredients and ordered instructions are
-managed with each recipe. There are no reviews or comments features; favorites
-remain the earlier in-memory frontend preview and are not synced to Supabase.
+managed with each recipe.
+
+Favorites are stored in `public.user_favorites`, keyed by `(user_id, recipe_id)`.
+The user ID references `auth.users(id)` and RLS compares it with `auth.uid()`.
+Authenticated users can select, insert, and delete only their own rows; clients
+cannot update favorite ownership. Recipes hidden by recipe RLS (drafts or
+deleted recipes) are not returned on the Favorites page. No service-role key
+is used by the frontend.
 If a cover-image object is missing or unreadable, its content remains available
 without the image; development builds log the Storage error name, message,
 code, and status without logging the object path or credentials. Other Storage
@@ -146,7 +162,8 @@ errors still fail the content request.
 
 ### Deployment and security checks
 
-1. Apply the migrations in order: profile, recipes, then blog/storage.
+1. Apply the migrations in order: profile, recipes, blog/storage, recipe
+   trigger/upload-ID fix, then user favorites.
 2. Ensure the initial admin account has been promoted using the trusted SQL
    editor procedure above; never add admin assignment to the client.
 3. Configure Supabase Auth redirect URLs for local and deployed app origins.

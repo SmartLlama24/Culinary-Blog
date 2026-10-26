@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import ErrorMessage from '../components/ErrorMessage.jsx'
+import FavoriteButton from '../components/FavoriteButton.jsx'
 import LoadingState from '../components/LoadingState.jsx'
 import { usePublishedRecipe } from '../hooks/useContent.js'
 import { formatContentDate, formatRecipeTime } from '../lib/content.js'
@@ -52,6 +53,11 @@ export default function RecipeDetailPage() {
           </span>
           <span>Serves {recipe.servings}</span>
         </div>
+        <FavoriteButton
+          className="favorite-detail-button"
+          recipeId={recipe.id}
+          recipeTitle={recipe.title}
+        />
         {recipe.cover_image_url && (
           <img
             alt={recipe.cover_image_alt || recipe.title}

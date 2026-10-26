@@ -185,6 +185,26 @@ export async function getPublishedRecipes() {
   )
 }
 
+export async function getPublishedRecipesByIds(ids) {
+  if (ids.length === 0) return []
+
+  const { data, error } = await requireSupabase()
+    .from('recipes')
+    .select(recipeSelection)
+    .eq('status', 'published')
+    .in('id', ids)
+
+  if (error) throw error
+
+  return signCovers(
+    (data ?? []).map((recipe) => ({
+      ...sortRecipeChildren(recipe),
+      content_type: 'recipe',
+      publication_date: recipe.published_at,
+    })),
+  )
+}
+
 export async function getPublishedRecipe(slug) {
   const { data, error } = await requireSupabase()
     .from('recipes')

@@ -467,6 +467,11 @@ main {
   transition: color 160ms ease, background 160ms ease, border 160ms ease;
 }
 
+.favorite-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .favorite-button:hover,
 .favorite-button.is-favorite {
   border-color: #f0e3dc;
@@ -477,6 +482,71 @@ main {
 .favorite-button svg {
   width: 16px;
   height: 16px;
+}
+
+.favorite-control {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.favorite-error {
+  position: absolute;
+  z-index: 2;
+  top: calc(100% + 6px);
+  right: 0;
+  width: max-content;
+  max-width: min(260px, 75vw);
+  padding: 8px 10px;
+  border: 1px solid #e7c7ba;
+  border-radius: 8px;
+  background: var(--paper);
+  color: #8f3f2c;
+  font-size: 11px;
+  line-height: 1.5;
+  box-shadow: 0 8px 20px rgba(38, 60, 49, 0.1);
+}
+
+.favorite-error-inline {
+  margin: 8px 0;
+  color: #8f3f2c;
+  font-size: 12px;
+}
+
+.unavailable-favorites {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.unavailable-favorites p {
+  flex-basis: 100%;
+  margin: 0;
+}
+
+.unavailable-favorite-item {
+  max-width: 100%;
+}
+
+.favorite-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: favorite-spin 700ms linear infinite;
+}
+
+@keyframes favorite-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.favorite-detail-button {
+  margin: 0 0 20px;
 }
 
 .post-card .card-image-link {

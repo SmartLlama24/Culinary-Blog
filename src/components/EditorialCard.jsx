@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import ArrowIcon from './ArrowIcon.jsx'
+import FavoriteButton from './FavoriteButton.jsx'
 import './EditorialCard.css'
 
 export default function EditorialCard({ item }) {
@@ -62,7 +63,10 @@ export default function EditorialCard({ item }) {
         </Link>
         <p className="post-excerpt">{item.excerpt}</p>
         <div className="card-footer">
-          <span>{detail}</span>
+          <span className="card-footer-detail">{detail}</span>
+          {isRecipe && (
+            <FavoriteButton recipeId={item.id} recipeTitle={item.title} />
+          )}
           <Link aria-label={`Read ${item.title}`} className="text-link" to={to}>
             <ArrowIcon />
           </Link>
